@@ -1,7 +1,9 @@
-import { generateYAxis } from '@/app/lib/utils';
-import { CalendarIcon } from '@heroicons/react/24/outline';
-import { lusitana } from '@/app/ui/fonts';
-import { Revenue } from '@/app/lib/definitions';
+"use client";
+import { generateYAxis } from "@/app/lib/utils";
+import { CalendarIcon } from "@heroicons/react/24/outline";
+import { lusitana } from "@/app/ui/fonts";
+import { Revenue } from "@/app/lib/definitions";
+import { useEffect, useState } from "react";
 
 // This component is representational only.
 // For data visualization UI, check out:
@@ -9,19 +11,20 @@ import { Revenue } from '@/app/lib/definitions';
 // https://www.chartjs.org/
 // https://airbnb.io/visx/
 
-export default async function RevenueChart({
-  revenue,
-}: {
-  revenue: Revenue[];
-}) {
+export default function RevenueChart({ revenue }: { revenue: Revenue[] }) {
   const chartHeight = 350;
   // NOTE: Uncomment this code in Chapter 7
+  const [animate, setAnimate] = useState(false);
+  const { yAxisLabels, topLabel } = generateYAxis(revenue);
 
-  // const { yAxisLabels, topLabel } = generateYAxis(revenue);
+  useEffect(() => {
+    // コンポーネントがマウントされた後にアニメーションを開始
+    setAnimate(true);
+  }, []);
 
-  // if (!revenue || revenue.length === 0) {
-  //   return <p className="mt-4 text-gray-400">No data available.</p>;
-  // }
+  if (!revenue || revenue.length === 0) {
+    return <p className="mt-4 text-gray-400">No data available.</p>;
+  }
 
   return (
     <div className="w-full md:col-span-4">
@@ -30,10 +33,10 @@ export default async function RevenueChart({
       </h2>
       {/* NOTE: Uncomment this code in Chapter 7 */}
 
-      {/* <div className="rounded-xl bg-gray-50 p-4">
+      <div className="rounded-xl bg-gray-50 p-4">
         <div className="sm:grid-cols-13 mt-0 grid grid-cols-12 items-end gap-2 rounded-md bg-white p-4 md:gap-4">
           <div
-            className="mb-6 hidden flex-col justify-between text-sm text-gray-400 sm:flex"
+            className="mb-6 hidden flex-col justify-between text-sm text-blue-400 sm:flex"
             style={{ height: `${chartHeight}px` }}
           >
             {yAxisLabels.map((label) => (
@@ -46,7 +49,10 @@ export default async function RevenueChart({
               <div
                 className="w-full rounded-md bg-blue-300"
                 style={{
-                  height: `${(chartHeight / topLabel) * month.revenue}px`,
+                  height: animate
+                    ? `${(chartHeight / topLabel) * month.revenue}px`
+                    : "0px",
+                  transition: "height 1s ease-out",
                 }}
               ></div>
               <p className="-rotate-90 text-sm text-gray-400 sm:rotate-0">
@@ -59,7 +65,7 @@ export default async function RevenueChart({
           <CalendarIcon className="h-5 w-5 text-gray-500" />
           <h3 className="ml-2 text-sm text-gray-500 ">Last 12 months</h3>
         </div>
-      </div> */}
+      </div>
     </div>
   );
 }
